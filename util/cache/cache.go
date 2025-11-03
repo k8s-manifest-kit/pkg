@@ -16,12 +16,14 @@ const (
 // Interface is a generic cache interface with TTL-based expiration.
 type Interface[T any] interface {
 	// Get retrieves a cached value for the given key.
+	// The key can be any type and will be converted to a string using the configured KeyFunc.
 	// Returns the cached value and true if found and not expired, or the zero value and false otherwise.
-	Get(key string) (T, bool)
+	Get(key any) (T, bool)
 
 	// Set stores a value for the given key.
+	// The key can be any type and will be converted to a string using the configured KeyFunc.
 	// The entry will automatically expire after the configured TTL.
-	Set(key string, value T)
+	Set(key any, value T)
 
 	// Sync removes all expired entries from the cache.
 	Sync()
@@ -37,13 +39,16 @@ type defaultCache[T any] struct {
 	mu      sync.RWMutex
 	entries map[string]entry[T]
 	ttl     time.Duration
+	keyFunc func(any) string
 }
 
 // New creates a new cache with the given options.
 // If no TTL is specified, defaults to 5 minutes.
+// If no KeyFunc is specified, uses DefaultKeyFunc.
 func New[T any](opts ...Option) Interface[T] {
 	options := Options{
-		TTL: defaultTTL,
+		TTL:     defaultTTL,
+		KeyFunc: DefaultKeyFunc,
 	}
 
 	for _, opt := range opts {
@@ -54,17 +59,23 @@ func New[T any](opts ...Option) Interface[T] {
 		options.TTL = defaultTTL
 	}
 
+	if options.KeyFunc == nil {
+		options.KeyFunc = DefaultKeyFunc
+	}
+
 	return &defaultCache[T]{
 		entries: make(map[string]entry[T]),
 		ttl:     options.TTL,
+		keyFunc: options.KeyFunc,
 	}
 }
 
-func (c *defaultCache[T]) Get(key string) (T, bool) {
+func (c *defaultCache[T]) Get(key any) (T, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
-	val, exists := c.entries[key]
+	strKey := c.keyFunc(key)
+	val, exists := c.entries[strKey]
 	if !exists {
 		var zero T
 
@@ -80,11 +91,12 @@ func (c *defaultCache[T]) Get(key string) (T, bool) {
 	return val.value, true
 }
 
-func (c *defaultCache[T]) Set(key string, val T) {
+func (c *defaultCache[T]) Set(key any, val T) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	c.entries[key] = entry[T]{
+	strKey := c.keyFunc(key)
+	c.entries[strKey] = entry[T]{
 		value:      val,
 		expiration: time.Now().Add(c.ttl),
 	}
@@ -122,7 +134,7 @@ func NewRenderCache(opts ...Option) Interface[[]unstructured.Unstructured] {
 	}
 }
 
-func (r *renderCache) Get(key string) ([]unstructured.Unstructured, bool) {
+func (r *renderCache) Get(key any) ([]unstructured.Unstructured, bool) {
 	if r == nil || r.cache == nil {
 		return nil, false
 	}
@@ -135,7 +147,7 @@ func (r *renderCache) Get(key string) ([]unstructured.Unstructured, bool) {
 	return utilk8s.DeepCloneUnstructuredSlice(cached), true
 }
 
-func (r *renderCache) Set(key string, value []unstructured.Unstructured) {
+func (r *renderCache) Set(key any, value []unstructured.Unstructured) {
 	if r == nil || r.cache == nil {
 		return
 	}
