@@ -6,7 +6,7 @@ require (
 	github.com/itchyny/gojq v0.12.17
 	github.com/onsi/gomega v1.38.2
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/apimachinery v0.34.2
+	k8s.io/apimachinery v0.34.3
 )
 
 require (
