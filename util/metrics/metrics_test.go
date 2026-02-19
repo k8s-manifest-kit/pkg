@@ -107,12 +107,10 @@ func TestThreadSafety(t *testing.T) {
 
 		var wg sync.WaitGroup
 		for i := range 100 {
-			wg.Add(1)
-			go func(id int) {
-				defer wg.Done()
-				rendererType := []string{"helm", "kustomize", "yaml"}[id%3]
+			wg.Go(func() {
+				rendererType := []string{"helm", "kustomize", "yaml"}[i%3]
 				metrics.ObserveRenderer(ctx, rendererType, time.Millisecond, 1, nil)
-			}(i)
+			})
 		}
 		wg.Wait()
 
@@ -133,11 +131,9 @@ func TestThreadSafety(t *testing.T) {
 
 		var wg sync.WaitGroup
 		for range 100 {
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
+			wg.Go(func() {
 				metrics.ObserveRender(ctx, time.Millisecond, 1)
-			}()
+			})
 		}
 		wg.Wait()
 

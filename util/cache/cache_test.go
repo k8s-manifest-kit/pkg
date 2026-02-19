@@ -1,6 +1,7 @@
 package cache_test
 
 import (
+	"strconv"
 	"testing"
 	"time"
 
@@ -333,7 +334,7 @@ func TestCacheKeyFunc(t *testing.T) {
 			case spec1:
 				return "spec1:" + k.Name
 			case spec2:
-				return "spec2:" + string(rune(k.ID))
+				return "spec2:" + strconv.Itoa(k.ID)
 			case string:
 				return "string:" + k
 			default:
