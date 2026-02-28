@@ -10,7 +10,7 @@ import (
 // This interface is called once per Engine.Render() invocation to record
 // aggregate metrics across all renderers, filters, and transformers.
 //
-// Implementations must be thread-safe as renders may occur concurrently.
+// Implementations must be thread-safe as renders may be called from multiple goroutines.
 type RenderMetric interface {
 	// Observe records metrics for a single render operation.
 	//
@@ -30,8 +30,7 @@ type RenderMetric interface {
 // This interface is called once per Renderer.Process() invocation to record
 // metrics for each specific renderer type (helm, kustomize, gotemplate, yaml, mem).
 //
-// Implementations must be thread-safe as renderers may execute concurrently
-// when parallel rendering is enabled.
+// Implementations must be thread-safe as renderers may be called from multiple goroutines.
 type RendererMetric interface {
 	// Observe records metrics for a single renderer execution.
 	//
