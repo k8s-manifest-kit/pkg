@@ -26,12 +26,15 @@ pkg/
 │   │   ├── metrics_test.go
 │   │   ├── memory/     # In-memory metrics collector
 │   │   └── noop/       # No-op metrics collector
-│   ├── merge.go        # Deep merge implementation
-│   ├── merge_test.go
+│   ├── maps/           # Deep clone and merge for map[string]any
+│   │   ├── clone.go
+│   │   ├── clone_test.go
+│   │   ├── merge.go
+│   │   └── merge_test.go
 │   └── option.go       # Functional options pattern support
 ```
 
-## 3. Value Merging Strategy (pkg/util/merge.go)
+## 3. Value Merging Strategy (pkg/util/maps)
 
 The deep merge utility provides a robust way to merge nested map structures with well-defined semantics. This is used throughout k8s-manifest-kit for merging configuration values.
 
@@ -76,7 +79,7 @@ overlay := map[string]any{
     },
 }
 
-result := util.DeepMerge(base, overlay)
+result := maps.DeepMerge(base, overlay)
 // result["config"] = {
 //     "host":    "localhost",  // Preserved from base
 //     "port":    9090,         // Overridden by overlay
@@ -95,7 +98,7 @@ overlay := map[string]any{
     "tags": []string{"prod"},
 }
 
-result := util.DeepMerge(base, overlay)
+result := maps.DeepMerge(base, overlay)
 // result["tags"] = ["prod"]  // NOT ["dev", "test", "prod"]
 ```
 
@@ -112,7 +115,7 @@ overlay := map[string]any{
     "service": "NodePort",  // String replacing a map
 }
 
-result := util.DeepMerge(base, overlay)
+result := maps.DeepMerge(base, overlay)
 // result["service"] = "NodePort"  // Map completely replaced by string
 ```
 

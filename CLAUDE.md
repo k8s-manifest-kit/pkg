@@ -26,17 +26,18 @@ TTL-based caching with automatic deep cloning:
 
 See [docs/design.md#4-caching-architecture](docs/design.md#4-caching-architecture) for complete documentation.
 
-### Deep Merge (util/merge.go)
+### Maps Utilities (util/maps)
 
-Robust deep merging of nested map structures:
-- Recursive map merging (preserves keys from both sides)
+Deep cloning and merging of nested `map[string]any` structures:
+- `DeepCloneMap` / `DeepCloneValue` for fully independent copies of JSON-like trees
+- `DeepMerge` for recursive map merging (preserves keys from both sides)
 - Slice replacement (not appending)
 - Type-safe handling of mismatches
-- Performance-optimized with selective cloning
+- Performance-optimized with selective cloning and fast typed-slice paths
 
 ```go
-result := util.DeepMerge(base, overlay)
-// Overlay values take precedence, nested maps are merged
+clone := maps.DeepCloneMap(original)
+result := maps.DeepMerge(base, overlay)
 ```
 
 See [docs/design.md#3-value-merging-strategy](docs/design.md#3-value-merging-strategy) for semantics and examples.

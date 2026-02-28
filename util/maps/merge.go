@@ -1,6 +1,4 @@
-package util
-
-import "reflect"
+package maps
 
 // DeepMerge recursively merges overlay into base, with overlay values taking precedence.
 // Returns a new map without modifying the inputs.
@@ -74,119 +72,34 @@ func DeepMerge(base map[string]any, overlay map[string]any) map[string]any {
 		return map[string]any{}
 	}
 	if base == nil {
-		return cloneMap(overlay)
+		return DeepCloneMap(overlay)
 	}
 	if overlay == nil {
-		return cloneMap(base)
+		return DeepCloneMap(base)
 	}
 
-	// Preallocate result map with estimated capacity
 	result := make(map[string]any, len(base)+len(overlay))
 
-	// First, copy base values that won't be overridden by overlay
-	// This avoids cloning values that will be immediately replaced
 	for k, baseValue := range base {
 		if overlayValue, willOverride := overlay[k]; willOverride {
-			// Check if both are maps - if so, we'll merge recursively
 			baseMap, baseIsMap := baseValue.(map[string]any)
 			overlayMap, overlayIsMap := overlayValue.(map[string]any)
 
 			if baseIsMap && overlayIsMap {
-				// Recursively merge nested maps
 				result[k] = DeepMerge(baseMap, overlayMap)
 			} else {
-				// Overlay wins for non-map values or type mismatches
-				result[k] = cloneValue(overlayValue)
+				result[k] = DeepCloneValue(overlayValue)
 			}
 		} else {
-			// Base value not overridden - clone and keep it
-			result[k] = cloneValue(baseValue)
+			result[k] = DeepCloneValue(baseValue)
 		}
 	}
 
-	// Add keys that only exist in overlay
 	for k, overlayValue := range overlay {
 		if _, exists := base[k]; !exists {
-			result[k] = cloneValue(overlayValue)
+			result[k] = DeepCloneValue(overlayValue)
 		}
 	}
 
 	return result
-}
-
-// cloneMap creates a shallow copy of a map.
-func cloneMap(m map[string]any) map[string]any {
-	if m == nil {
-		return nil
-	}
-
-	result := make(map[string]any, len(m))
-	for k, v := range m {
-		result[k] = cloneValue(v)
-	}
-
-	return result
-}
-
-// cloneValue creates a deep copy of a value.
-// For maps, recursively clones all nested maps and slices.
-// For []any slices, recursively clones all elements with deep cloning.
-// For other slice types ([]string, []int, etc.), creates a shallow copy of the slice itself.
-// For primitives and other types, returns the value as-is.
-func cloneValue(v any) any {
-	if v == nil {
-		return nil
-	}
-
-	switch val := v.(type) {
-	case map[string]any:
-		return cloneMap(val)
-	case []any:
-		clone := make([]any, len(val))
-		for i, elem := range val {
-			clone[i] = cloneValue(elem)
-		}
-
-		return clone
-	// Common typed slices - use type switches for performance instead of reflection
-	case []string:
-		clone := make([]string, len(val))
-		copy(clone, val)
-
-		return clone
-	case []int:
-		clone := make([]int, len(val))
-		copy(clone, val)
-
-		return clone
-	case []int64:
-		clone := make([]int64, len(val))
-		copy(clone, val)
-
-		return clone
-	case []float64:
-		clone := make([]float64, len(val))
-		copy(clone, val)
-
-		return clone
-	case []bool:
-		clone := make([]bool, len(val))
-		copy(clone, val)
-
-		return clone
-	default:
-		// Handle other slice types using reflection to avoid shared memory
-		rv := reflect.ValueOf(v)
-		if rv.Kind() == reflect.Slice {
-			sliceLen := rv.Len()
-			clone := reflect.MakeSlice(rv.Type(), sliceLen, sliceLen)
-			for i := range sliceLen {
-				clone.Index(i).Set(rv.Index(i))
-			}
-
-			return clone.Interface()
-		}
-
-		return v
-	}
 }

@@ -1,10 +1,10 @@
-package util_test
+package maps_test
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/k8s-manifest-kit/pkg/util"
+	"github.com/k8s-manifest-kit/pkg/util/maps"
 
 	. "github.com/onsi/gomega"
 )
@@ -13,7 +13,7 @@ func TestDeepMerge(t *testing.T) {
 	t.Run("should return empty map when both inputs are nil", func(t *testing.T) {
 		g := NewWithT(t)
 
-		result := util.DeepMerge(nil, nil)
+		result := maps.DeepMerge(nil, nil)
 
 		g.Expect(result).Should(BeEmpty())
 	})
@@ -25,7 +25,7 @@ func TestDeepMerge(t *testing.T) {
 			"key": "value",
 		}
 
-		result := util.DeepMerge(nil, overlay)
+		result := maps.DeepMerge(nil, overlay)
 
 		g.Expect(result).Should(Equal(overlay))
 		g.Expect(result).ShouldNot(BeIdenticalTo(overlay))
@@ -38,7 +38,7 @@ func TestDeepMerge(t *testing.T) {
 			"key": "value",
 		}
 
-		result := util.DeepMerge(base, nil)
+		result := maps.DeepMerge(base, nil)
 
 		g.Expect(result).Should(Equal(base))
 		g.Expect(result).ShouldNot(BeIdenticalTo(base))
@@ -54,7 +54,7 @@ func TestDeepMerge(t *testing.T) {
 			"key2": "value2",
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
 		g.Expect(result).Should(Equal(map[string]any{
 			"key1": "value1",
@@ -72,7 +72,7 @@ func TestDeepMerge(t *testing.T) {
 			"key": "overlay_value",
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
 		g.Expect(result).Should(Equal(map[string]any{
 			"key": "overlay_value",
@@ -95,7 +95,7 @@ func TestDeepMerge(t *testing.T) {
 			},
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
 		g.Expect(result).Should(Equal(map[string]any{
 			"nested": map[string]any{
@@ -118,7 +118,7 @@ func TestDeepMerge(t *testing.T) {
 			"key": "string_value",
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
 		g.Expect(result).Should(Equal(map[string]any{
 			"key": "string_value",
@@ -152,7 +152,7 @@ func TestDeepMerge(t *testing.T) {
 			},
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
 		g.Expect(result).Should(Equal(map[string]any{
 			"replicaCount": 3,
@@ -190,7 +190,7 @@ func TestDeepMerge(t *testing.T) {
 			"key": "overlay_value",
 		}
 
-		_ = util.DeepMerge(base, overlay)
+		_ = maps.DeepMerge(base, overlay)
 
 		g.Expect(base).Should(Equal(baseOriginal))
 		g.Expect(overlay).Should(Equal(overlayOriginal))
@@ -206,7 +206,7 @@ func TestDeepMerge(t *testing.T) {
 			"list": []any{"c", "d"},
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
 		g.Expect(result).Should(Equal(map[string]any{
 			"list": []any{"c", "d"},
@@ -236,7 +236,7 @@ func TestDeepMerge(t *testing.T) {
 			},
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
 		g.Expect(result).Should(Equal(map[string]any{
 			"level1": map[string]any{
@@ -271,7 +271,7 @@ func TestDeepMerge(t *testing.T) {
 			},
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
 		g.Expect(result).Should(Equal(map[string]any{
 			"items": []any{
@@ -304,7 +304,7 @@ func TestDeepMerge(t *testing.T) {
 			"other": "value",
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
 		g.Expect(result).Should(HaveKey("matrix"))
 		g.Expect(result).Should(HaveKey("other"))
@@ -352,7 +352,7 @@ func TestDeepMerge(t *testing.T) {
 			},
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
 		resultContainers := result["containers"].([]any)
 		overlayContainers := overlay["containers"].([]any)
@@ -385,7 +385,7 @@ func TestDeepMerge(t *testing.T) {
 			"other": "value",
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
 		g.Expect(result["list"]).Should(Equal([]any{"a", nil, "c"}))
 
@@ -407,7 +407,7 @@ func TestDeepMerge(t *testing.T) {
 			"other": "value",
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
 		g.Expect(result["empty"]).Should(Equal([]any{}))
 		g.Expect(result["empty"]).ShouldNot(BeIdenticalTo(base["empty"]))
@@ -433,7 +433,7 @@ func TestDeepMerge(t *testing.T) {
 			"version": "v2",
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
 		resultConfigs := result["configs"].([]any)
 		baseConfigs := base["configs"].([]any)
@@ -454,13 +454,11 @@ func TestDeepMerge(t *testing.T) {
 			"tags": []string{"dev", "test"},
 		}
 
-		result := util.DeepMerge(base, nil)
+		result := maps.DeepMerge(base, nil)
 
-		// Modify the cloned slice
 		resultTags := result["tags"].([]string)
 		resultTags[0] = "production"
 
-		// Original should be unchanged
 		baseTags := base["tags"].([]string)
 		g.Expect(baseTags[0]).Should(Equal("dev"))
 		g.Expect(baseTags[1]).Should(Equal("test"))
@@ -473,13 +471,11 @@ func TestDeepMerge(t *testing.T) {
 			"ports": []int{8080, 9090},
 		}
 
-		result := util.DeepMerge(base, nil)
+		result := maps.DeepMerge(base, nil)
 
-		// Modify the cloned slice
 		resultPorts := result["ports"].([]int)
 		resultPorts[0] = 3000
 
-		// Original should be unchanged
 		basePorts := base["ports"].([]int)
 		g.Expect(basePorts[0]).Should(Equal(8080))
 		g.Expect(basePorts[1]).Should(Equal(9090))
@@ -492,13 +488,11 @@ func TestDeepMerge(t *testing.T) {
 			"features": []bool{true, false, true},
 		}
 
-		result := util.DeepMerge(base, nil)
+		result := maps.DeepMerge(base, nil)
 
-		// Modify the cloned slice
 		resultFeatures := result["features"].([]bool)
 		resultFeatures[0] = false
 
-		// Original should be unchanged
 		baseFeatures := base["features"].([]bool)
 		g.Expect(baseFeatures[0]).Should(BeTrue())
 		g.Expect(baseFeatures[1]).Should(BeFalse())
@@ -521,16 +515,14 @@ func TestDeepMerge(t *testing.T) {
 			},
 		}
 
-		result := util.DeepMerge(base, overlay)
+		result := maps.DeepMerge(base, overlay)
 
-		// Modify the cloned slices
 		resultConfig := result["config"].(map[string]any)
 		resultHosts := resultConfig["hosts"].([]string)
 		resultPorts := resultConfig["ports"].([]int)
 		resultHosts[0] = "example.com"
 		resultPorts[0] = 3000
 
-		// Original should be unchanged
 		baseConfig := base["config"].(map[string]any)
 		baseHosts := baseConfig["hosts"].([]string)
 		basePorts := baseConfig["ports"].([]int)
@@ -545,13 +537,11 @@ func TestDeepMerge(t *testing.T) {
 			"environments": []string{"dev", "staging", "prod"},
 		}
 
-		result := util.DeepMerge(nil, overlay)
+		result := maps.DeepMerge(nil, overlay)
 
-		// Modify the cloned slice
 		resultEnvs := result["environments"].([]string)
 		resultEnvs[2] = "production"
 
-		// Original overlay should be unchanged
 		overlayEnvs := overlay["environments"].([]string)
 		g.Expect(overlayEnvs[0]).Should(Equal("dev"))
 		g.Expect(overlayEnvs[1]).Should(Equal("staging"))
@@ -565,7 +555,7 @@ func TestDeepMerge(t *testing.T) {
 			"bytes": []uint8{1, 2, 3, 4},
 		}
 
-		result := util.DeepMerge(base, nil)
+		result := maps.DeepMerge(base, nil)
 
 		resultBytes := result["bytes"].([]uint8)
 		resultBytes[0] = 255
@@ -582,7 +572,7 @@ func TestDeepMerge(t *testing.T) {
 			"values": []float32{1.1, 2.2, 3.3},
 		}
 
-		result := util.DeepMerge(base, nil)
+		result := maps.DeepMerge(base, nil)
 
 		resultValues := result["values"].([]float32)
 		resultValues[0] = 9.9
@@ -607,7 +597,7 @@ func TestDeepMerge(t *testing.T) {
 			},
 		}
 
-		result := util.DeepMerge(base, nil)
+		result := maps.DeepMerge(base, nil)
 
 		resultItems := result["items"].([]customStruct)
 		resultItems[0].Value = 999
@@ -634,7 +624,7 @@ func BenchmarkDeepMerge_SmallMaps(b *testing.B) {
 	}
 
 	for b.Loop() {
-		_ = util.DeepMerge(base, overlay)
+		_ = maps.DeepMerge(base, overlay)
 	}
 }
 
@@ -650,7 +640,7 @@ func BenchmarkDeepMerge_LargeMaps(b *testing.B) {
 	}
 
 	for b.Loop() {
-		_ = util.DeepMerge(base, overlay)
+		_ = maps.DeepMerge(base, overlay)
 	}
 }
 
@@ -680,7 +670,7 @@ func BenchmarkDeepMerge_DeepNesting(b *testing.B) {
 	}
 
 	for b.Loop() {
-		_ = util.DeepMerge(base, overlay)
+		_ = maps.DeepMerge(base, overlay)
 	}
 }
 
@@ -702,7 +692,7 @@ func BenchmarkDeepMerge_WithSlices(b *testing.B) {
 	}
 
 	for b.Loop() {
-		_ = util.DeepMerge(base, overlay)
+		_ = maps.DeepMerge(base, overlay)
 	}
 }
 
@@ -742,7 +732,7 @@ func BenchmarkDeepMerge_ComplexNested(b *testing.B) {
 	}
 
 	for b.Loop() {
-		_ = util.DeepMerge(base, overlay)
+		_ = maps.DeepMerge(base, overlay)
 	}
 }
 
@@ -756,7 +746,7 @@ func BenchmarkDeepMerge_TypedSlices(b *testing.B) {
 		}
 		b.ResetTimer()
 		for range b.N {
-			_ = util.DeepMerge(base, overlay)
+			_ = maps.DeepMerge(base, overlay)
 		}
 	})
 
@@ -769,7 +759,7 @@ func BenchmarkDeepMerge_TypedSlices(b *testing.B) {
 		}
 		b.ResetTimer()
 		for range b.N {
-			_ = util.DeepMerge(base, overlay)
+			_ = maps.DeepMerge(base, overlay)
 		}
 	})
 
@@ -782,7 +772,7 @@ func BenchmarkDeepMerge_TypedSlices(b *testing.B) {
 		}
 		b.ResetTimer()
 		for range b.N {
-			_ = util.DeepMerge(base, overlay)
+			_ = maps.DeepMerge(base, overlay)
 		}
 	})
 
@@ -795,7 +785,7 @@ func BenchmarkDeepMerge_TypedSlices(b *testing.B) {
 		}
 		b.ResetTimer()
 		for range b.N {
-			_ = util.DeepMerge(base, overlay)
+			_ = maps.DeepMerge(base, overlay)
 		}
 	})
 
@@ -808,7 +798,7 @@ func BenchmarkDeepMerge_TypedSlices(b *testing.B) {
 		}
 		b.ResetTimer()
 		for range b.N {
-			_ = util.DeepMerge(base, overlay)
+			_ = maps.DeepMerge(base, overlay)
 		}
 	})
 }
@@ -816,7 +806,7 @@ func BenchmarkDeepMerge_TypedSlices(b *testing.B) {
 func BenchmarkDeepMerge_NilHandling(b *testing.B) {
 	b.Run("bothNil", func(b *testing.B) {
 		for range b.N {
-			_ = util.DeepMerge(nil, nil)
+			_ = maps.DeepMerge(nil, nil)
 		}
 	})
 
@@ -827,7 +817,7 @@ func BenchmarkDeepMerge_NilHandling(b *testing.B) {
 		}
 		b.ResetTimer()
 		for range b.N {
-			_ = util.DeepMerge(nil, overlay)
+			_ = maps.DeepMerge(nil, overlay)
 		}
 	})
 
@@ -838,7 +828,7 @@ func BenchmarkDeepMerge_NilHandling(b *testing.B) {
 		}
 		b.ResetTimer()
 		for range b.N {
-			_ = util.DeepMerge(base, nil)
+			_ = maps.DeepMerge(base, nil)
 		}
 	})
 }
@@ -858,7 +848,7 @@ func BenchmarkDeepMerge_TypeMismatch(b *testing.B) {
 	}
 
 	for b.Loop() {
-		_ = util.DeepMerge(base, overlay)
+		_ = maps.DeepMerge(base, overlay)
 	}
 }
 
@@ -875,7 +865,7 @@ func BenchmarkDeepMerge_NoOverlap(b *testing.B) {
 	}
 
 	for b.Loop() {
-		_ = util.DeepMerge(base, overlay)
+		_ = maps.DeepMerge(base, overlay)
 	}
 }
 
@@ -892,6 +882,6 @@ func BenchmarkDeepMerge_FullOverlap(b *testing.B) {
 	}
 
 	for b.Loop() {
-		_ = util.DeepMerge(base, overlay)
+		_ = maps.DeepMerge(base, overlay)
 	}
 }
