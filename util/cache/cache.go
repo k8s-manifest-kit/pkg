@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-
-	utilk8s "github.com/k8s-manifest-kit/pkg/util/k8s"
 )
 
 const (
@@ -144,7 +142,16 @@ func (r *renderCache) Get(key any) ([]unstructured.Unstructured, bool) {
 		return nil, false
 	}
 
-	return utilk8s.DeepCloneUnstructuredSlice(cached), true
+	if cached == nil {
+		return nil, true
+	}
+
+	result := make([]unstructured.Unstructured, len(cached))
+	for i, obj := range cached {
+		result[i] = *obj.DeepCopy()
+	}
+
+	return result, true
 }
 
 func (r *renderCache) Set(key any, value []unstructured.Unstructured) {
@@ -152,7 +159,18 @@ func (r *renderCache) Set(key any, value []unstructured.Unstructured) {
 		return
 	}
 
-	r.cache.Set(key, utilk8s.DeepCloneUnstructuredSlice(value))
+	if value == nil {
+		r.cache.Set(key, nil)
+
+		return
+	}
+
+	cloned := make([]unstructured.Unstructured, len(value))
+	for i, obj := range value {
+		cloned[i] = *obj.DeepCopy()
+	}
+
+	r.cache.Set(key, cloned)
 }
 
 func (r *renderCache) Sync() {

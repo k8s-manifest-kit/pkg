@@ -12,22 +12,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-// DeepCloneUnstructuredSlice creates a deep copy of a slice of unstructured objects.
-// This is necessary because unstructured.Unstructured contains map[string]interface{}
-// which needs deep copying to prevent mutations from affecting the original.
-func DeepCloneUnstructuredSlice(objects []unstructured.Unstructured) []unstructured.Unstructured {
-	if objects == nil {
-		return nil
-	}
-
-	result := make([]unstructured.Unstructured, len(objects))
-	for i, obj := range objects {
-		result[i] = *obj.DeepCopy()
-	}
-
-	return result
-}
-
 // DecodeYAML decodes YAML content into a slice of unstructured objects.
 func DecodeYAML(content []byte) ([]unstructured.Unstructured, error) {
 	results := make([]unstructured.Unstructured, 0)

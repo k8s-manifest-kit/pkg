@@ -179,14 +179,22 @@ type renderCache struct {
 // Automatically clones on Get to prevent external modifications from affecting cache
 func (c *renderCache) Get(key string) ([]unstructured.Unstructured, bool) {
     if value, found := c.cache.Get(key); found {
-        return k8s.DeepCloneUnstructuredSlice(value), true
+        result := make([]unstructured.Unstructured, len(value))
+        for i, obj := range value {
+            result[i] = *obj.DeepCopy()
+        }
+        return result, true
     }
     return nil, false
 }
 
 // Automatically clones on Set to prevent caller modifications from affecting cache
 func (c *renderCache) Set(key string, value []unstructured.Unstructured) {
-    c.cache.Set(key, k8s.DeepCloneUnstructuredSlice(value))
+    cloned := make([]unstructured.Unstructured, len(value))
+    for i, obj := range value {
+        cloned[i] = *obj.DeepCopy()
+    }
+    c.cache.Set(key, cloned)
 }
 ```
 
