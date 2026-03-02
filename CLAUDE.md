@@ -10,9 +10,9 @@ The `pkg` module provides core utilities for the k8s-manifest-kit ecosystem. It 
 
 ## Documentation
 
-- **[README.md](README.md)** - Module overview and quick start
-- **[docs/design.md](docs/design.md)** - Architecture, design decisions, and implementation details
-- **[docs/development.md](docs/development.md)** - Coding conventions, testing guidelines, and contribution guide
+- **@README.md** - Module overview and quick start
+- **@docs/design.md** - Architecture, design decisions, and implementation details
+- **@docs/development.md** - Coding conventions, testing guidelines, and contribution guide
 
 ## Core Utilities
 
@@ -24,7 +24,7 @@ TTL-based caching with automatic deep cloning:
 - Lazy expiration with manual `Sync()` cleanup
 - Configurable TTL via `WithTTL()`
 
-See [docs/design.md#4-caching-architecture](docs/design.md#4-caching-architecture) for complete documentation.
+See @docs/design.md (section 4: Caching Architecture) for complete documentation.
 
 ### Maps Utilities (util/maps)
 
@@ -40,7 +40,7 @@ clone := maps.DeepCloneMap(original)
 result := maps.DeepMerge(base, overlay)
 ```
 
-See [docs/design.md#3-value-merging-strategy](docs/design.md#3-value-merging-strategy) for semantics and examples.
+See @docs/design.md (section 3: Value Merging Strategy) for semantics and examples.
 
 ### Kubernetes Utilities (util/k8s)
 
@@ -73,7 +73,7 @@ type FunctionalOption[T any] func(*T)
 
 Used consistently across k8s-manifest-kit for flexible configuration.
 
-See [docs/design.md#8-functional-options-pattern](docs/design.md#8-functional-options-pattern) for usage patterns.
+See @docs/design.md (section 8: Functional Options Pattern) for usage patterns.
 
 ## Development
 
@@ -94,10 +94,10 @@ go test -v ./util/... -run=^$ -bench=.
 ```
 
 For detailed development information:
-- **Build commands**: See [docs/development.md#setup-and-build](docs/development.md#setup-and-build)
-- **Coding conventions**: See [docs/development.md#coding-conventions](docs/development.md#coding-conventions)
-- **Testing guidelines**: See [docs/development.md#testing-guidelines](docs/development.md#testing-guidelines)
-- **Code review guidelines**: See [docs/development.md#code-review-guidelines](docs/development.md#code-review-guidelines)
+- **Build commands**: See @docs/development.md (Setup and Build)
+- **Coding conventions**: See @docs/development.md (Coding Conventions)
+- **Testing guidelines**: See @docs/development.md (Testing Guidelines)
+- **Code review guidelines**: See @docs/development.md (Code Review Guidelines)
 
 ## Testing Conventions
 
@@ -106,7 +106,7 @@ For detailed development information:
 - Benchmark naming: `Benchmark<Utility><TestName>`
 - Use `t.Context()` instead of `context.Background()`
 
-See [docs/development.md#testing-guidelines](docs/development.md#testing-guidelines) for complete testing practices.
+See @docs/development.md (Testing Guidelines) for complete testing practices.
 
 ## Key Design Principles
 
@@ -117,5 +117,5 @@ See [docs/development.md#testing-guidelines](docs/development.md#testing-guideli
 5. **Minimal Dependencies**: Reduce external dependencies where practical
 6. **Defensive Programming**: Handle edge cases gracefully (nil receivers, empty inputs)
 
-See [docs/design.md#9-design-principles](docs/design.md#9-design-principles) for more details.
+See @docs/design.md (section 9: Design Principles) for more details.
 
