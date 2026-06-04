@@ -3,11 +3,11 @@ module github.com/k8s-manifest-kit/pkg
 go 1.25.11
 
 require (
-	github.com/itchyny/gojq v0.12.18
+	github.com/itchyny/gojq v0.12.19
 	github.com/onsi/gomega v1.41.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/apimachinery v0.35.2
-	k8s.io/utils v0.0.0-20260210185600-b8788abfbbc2
+	k8s.io/apimachinery v0.35.5
+	k8s.io/utils v0.0.0-20260507154919-ff6756f316d2
 )
 
 require (
@@ -15,7 +15,7 @@ require (
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/itchyny/timefmt-go v0.1.7 // indirect
+	github.com/itchyny/timefmt-go v0.1.8 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
