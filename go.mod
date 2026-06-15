@@ -4,7 +4,7 @@ go 1.25.11
 
 require (
 	github.com/itchyny/gojq v0.12.19
-	github.com/onsi/gomega v1.41.0
+	github.com/onsi/gomega v1.42.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/apimachinery v0.35.5
 	k8s.io/utils v0.0.0-20260507154919-ff6756f316d2
