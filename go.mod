@@ -4,7 +4,7 @@ go 1.25.11
 
 require (
 	github.com/itchyny/gojq v0.12.19
-	github.com/onsi/gomega v1.41.0
+	github.com/onsi/gomega v1.42.1
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/apimachinery v0.35.5
 	k8s.io/utils v0.0.0-20260507154919-ff6756f316d2
@@ -25,8 +25,8 @@ require (
 	github.com/x448/float16 v0.8.4 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/net v0.51.0 // indirect
-	golang.org/x/text v0.34.0 // indirect
+	golang.org/x/net v0.56.0 // indirect
+	golang.org/x/text v0.38.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
