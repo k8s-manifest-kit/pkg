@@ -1,6 +1,6 @@
 module github.com/k8s-manifest-kit/pkg
 
-go 1.26.0
+go 1.26.5
 
 require (
 	github.com/itchyny/gojq v0.12.19
