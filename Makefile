@@ -53,12 +53,27 @@ bench:
 deps:
 	go mod tidy
 
-.PHONY: deps/update
-deps/update:
-	@for mod in $$(grep 'github.com/k8s-manifest-kit/' go.mod | grep -v module | awk '{print $$1}'); do \
-		go get $$mod@main; \
+.PHONY: deps/update-internal
+deps/update-internal:
+	@for mod in $$(go list -m -f '{{if and (not .Main) (not .Indirect)}}{{.Path}}{{end}}' all); do \
+		case "$$mod" in \
+			github.com/k8s-manifest-kit/*) go get "$$mod@main" ;; \
+		esac; \
 	done
 	go mod tidy
+
+.PHONY: deps/update-direct
+deps/update-direct:
+	@for mod in $$(go list -m -f '{{if and (not .Main) (not .Indirect)}}{{.Path}}{{end}}' all); do \
+		case "$$mod" in \
+			github.com/k8s-manifest-kit/*) ;; \
+			*) go get "$$mod@latest" ;; \
+		esac; \
+	done
+	go mod tidy
+
+.PHONY: deps/update
+deps/update: deps/update-internal deps/update-direct
 
 .PHONY: lint
 lint:
