@@ -2,6 +2,7 @@ package memory_test
 
 import (
 	"errors"
+	"sync"
 	"testing"
 	"time"
 
@@ -110,4 +111,58 @@ func TestRendererMetric(t *testing.T) {
 		g.Expect(helmStats.Errors).To(Equal(2))
 		g.Expect(helmStats.TotalObjects).To(Equal(10))
 	})
+}
+
+func TestRenderMetric_ConcurrentAccess(t *testing.T) {
+	g := NewWithT(t)
+	ctx := t.Context()
+	m := &memory.RenderMetric{}
+
+	var wg sync.WaitGroup
+
+	for range 100 {
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+
+			m.Observe(ctx, 10*time.Millisecond, 5)
+			_ = m.Summary()
+		}()
+	}
+
+	wg.Wait()
+
+	summary := m.Summary()
+	g.Expect(summary.TotalRenders).To(Equal(100))
+	g.Expect(summary.TotalObjects).To(Equal(500))
+}
+
+func TestRendererMetric_ConcurrentAccess(t *testing.T) {
+	g := NewWithT(t)
+	ctx := t.Context()
+	m := memory.NewRendererMetric()
+
+	var wg sync.WaitGroup
+
+	for i := range 100 {
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+
+			rendererType := "helm"
+			if i%2 == 0 {
+				rendererType = "yaml"
+			}
+
+			m.Observe(ctx, rendererType, 10*time.Millisecond, 5, nil)
+			_ = m.Summary()
+		}()
+	}
+
+	wg.Wait()
+
+	summary := m.Summary()
+	g.Expect(summary["helm"].Executions + summary["yaml"].Executions).To(Equal(100))
 }

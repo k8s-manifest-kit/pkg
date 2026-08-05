@@ -10,9 +10,9 @@ import (
 type RenderMetric struct {
 	mu sync.RWMutex
 
-	TotalRenders  int
-	TotalDuration time.Duration
-	TotalObjects  int
+	totalRenders  int
+	totalDuration time.Duration
+	totalObjects  int
 }
 
 // Observe records a render operation's metrics.
@@ -20,9 +20,9 @@ func (m *RenderMetric) Observe(_ context.Context, duration time.Duration, object
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	m.TotalRenders++
-	m.TotalDuration += duration
-	m.TotalObjects += objectCount
+	m.totalRenders++
+	m.totalDuration += duration
+	m.totalObjects += objectCount
 }
 
 // Summary returns a snapshot of current render metrics.
@@ -31,14 +31,14 @@ func (m *RenderMetric) Summary() RenderSummary {
 	defer m.mu.RUnlock()
 
 	avgDuration := time.Duration(0)
-	if m.TotalRenders > 0 {
-		avgDuration = m.TotalDuration / time.Duration(m.TotalRenders)
+	if m.totalRenders > 0 {
+		avgDuration = m.totalDuration / time.Duration(m.totalRenders)
 	}
 
 	return RenderSummary{
-		TotalRenders:    m.TotalRenders,
+		TotalRenders:    m.totalRenders,
 		AverageDuration: avgDuration,
-		TotalObjects:    m.TotalObjects,
+		TotalObjects:    m.totalObjects,
 	}
 }
 
@@ -52,21 +52,20 @@ type RenderSummary struct {
 // RendererMetric collects renderer-specific metrics in memory.
 type RendererMetric struct {
 	mu        sync.RWMutex
-	Renderers map[string]*RendererStats
+	renderers map[string]*rendererStats
 }
 
-// RendererStats holds statistics for a specific renderer type.
-type RendererStats struct {
-	Executions int
-	Duration   time.Duration
-	Objects    int
-	Errors     int
+type rendererStats struct {
+	executions int
+	duration   time.Duration
+	objects    int
+	errors     int
 }
 
 // NewRendererMetric creates a new renderer metrics collector.
 func NewRendererMetric() *RendererMetric {
 	return &RendererMetric{
-		Renderers: make(map[string]*RendererStats),
+		renderers: make(map[string]*rendererStats),
 	}
 }
 
@@ -81,16 +80,16 @@ func (m *RendererMetric) Observe(
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	if _, exists := m.Renderers[rendererType]; !exists {
-		m.Renderers[rendererType] = &RendererStats{}
+	if _, exists := m.renderers[rendererType]; !exists {
+		m.renderers[rendererType] = &rendererStats{}
 	}
 
-	stats := m.Renderers[rendererType]
-	stats.Executions++
-	stats.Duration += duration
-	stats.Objects += objectCount
+	stats := m.renderers[rendererType]
+	stats.executions++
+	stats.duration += duration
+	stats.objects += objectCount
 	if err != nil {
-		stats.Errors++
+		stats.errors++
 	}
 }
 
@@ -100,17 +99,17 @@ func (m *RendererMetric) Summary() map[string]RendererSummary {
 	defer m.mu.RUnlock()
 
 	result := make(map[string]RendererSummary)
-	for name, stats := range m.Renderers {
+	for name, stats := range m.renderers {
 		avgDuration := time.Duration(0)
-		if stats.Executions > 0 {
-			avgDuration = stats.Duration / time.Duration(stats.Executions)
+		if stats.executions > 0 {
+			avgDuration = stats.duration / time.Duration(stats.executions)
 		}
 
 		result[name] = RendererSummary{
-			Executions:      stats.Executions,
+			Executions:      stats.executions,
 			AverageDuration: avgDuration,
-			TotalObjects:    stats.Objects,
-			Errors:          stats.Errors,
+			TotalObjects:    stats.objects,
+			Errors:          stats.errors,
 		}
 	}
 
