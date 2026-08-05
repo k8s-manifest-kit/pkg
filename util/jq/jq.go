@@ -71,7 +71,10 @@ func WithFunction(name string, minarity, maxarity int, impl func(any, []any) any
 // WithVariable adds a variable to the JQ engine.
 func WithVariable(name string, value any) Option {
 	return util.FunctionalOption[Engine](func(e *Engine) {
-		// Ensure variable name starts with $
+		if len(name) == 0 {
+			return
+		}
+
 		if name[0] != '$' {
 			name = "$" + name
 		}

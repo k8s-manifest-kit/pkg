@@ -294,6 +294,20 @@ func TestEngineWithVariables(t *testing.T) {
 		g.Expect(err).ToNot(HaveOccurred())
 		g.Expect(result).To(BeTrue())
 	})
+
+	t.Run("should ignore empty variable name", func(t *testing.T) {
+		g := NewWithT(t)
+		engine, err := jq.NewEngine(`.value`, jq.WithVariable("", "ignored"))
+		g.Expect(err).ToNot(HaveOccurred())
+
+		input := map[string]any{
+			"value": "hello",
+		}
+
+		result, err := engine.Run(input)
+		g.Expect(err).ToNot(HaveOccurred())
+		g.Expect(result).To(Equal("hello"))
+	})
 }
 
 func TestEngineWithFunctions(t *testing.T) {
