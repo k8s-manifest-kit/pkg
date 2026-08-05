@@ -121,14 +121,12 @@ func TestRenderMetric_ConcurrentAccess(t *testing.T) {
 	var wg sync.WaitGroup
 
 	for range 100 {
-		wg.Add(1)
 
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 
 			m.Observe(ctx, 10*time.Millisecond, 5)
 			_ = m.Summary()
-		}()
+		})
 	}
 
 	wg.Wait()
@@ -146,10 +144,8 @@ func TestRendererMetric_ConcurrentAccess(t *testing.T) {
 	var wg sync.WaitGroup
 
 	for i := range 100 {
-		wg.Add(1)
 
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 
 			rendererType := "helm"
 			if i%2 == 0 {
@@ -158,7 +154,7 @@ func TestRendererMetric_ConcurrentAccess(t *testing.T) {
 
 			m.Observe(ctx, rendererType, 10*time.Millisecond, 5, nil)
 			_ = m.Summary()
-		}()
+		})
 	}
 
 	wg.Wait()
