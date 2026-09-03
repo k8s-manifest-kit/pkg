@@ -1,27 +1,21 @@
-# pkg
+# Shared Packages
 
-Shared utilities for caching, metrics, JQ integration, and Kubernetes helpers
+`pkg` contains reusable support packages for the manifest renderers and the
+engine: caches, Kubernetes object helpers, JSONPath/JQ helpers, metrics,
+error utilities, and functional options.
 
-Part of the [k8s-manifest-kit](https://github.com/k8s-manifest-kit) organization.
+Notable packages include:
 
-## Status
+- `cache` for TTL-aware generic caches and render-object caches.
+- `k8s` for object and metadata helpers.
+- `maps` for recursive map merging.
+- `jq` for JQ-based object transformations.
+- `metrics` for optional render metrics.
+- `errors` and `option.go` for shared error and option utilities.
 
-🚧 **Under Development** - This repository is being set up.
-
-## Installation
-
-```bash
-go get github.com/k8s-manifest-kit/pkg
-```
-
-## Documentation
-
-See the main [docs repository](https://github.com/k8s-manifest-kit/docs) for comprehensive documentation.
-
-## Contributing
-
-Contributions are welcome! Please see our [contributing guidelines](https://github.com/k8s-manifest-kit/docs/blob/main/CONTRIBUTING.md).
+See [`docs/design.md`](docs/design.md), [`docs/development.md`](docs/development.md),
+and [`AGENTS.md`](AGENTS.md).
 
 ## License
 
-Apache License 2.0 - See [LICENSE](LICENSE) for details.
+Apache License 2.0. See [LICENSE](LICENSE).
