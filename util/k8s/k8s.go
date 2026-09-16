@@ -78,3 +78,17 @@ func ToUnstructured(obj any) (*unstructured.Unstructured, error) {
 
 	return &u, nil
 }
+
+// ToUnstructuredSlice converts a slice of objects to unstructured representations.
+func ToUnstructuredSlice[T any](objects []T) ([]unstructured.Unstructured, error) {
+	result := make([]unstructured.Unstructured, 0, len(objects))
+	for i, object := range objects {
+		converted, err := ToUnstructured(object)
+		if err != nil {
+			return nil, fmt.Errorf("converting object at index %d: %w", i, err)
+		}
+		result = append(result, *converted)
+	}
+
+	return result, nil
+}

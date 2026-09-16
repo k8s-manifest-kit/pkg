@@ -360,3 +360,31 @@ func TestToUnstructured(t *testing.T) {
 		g.Expect(spec).Should(HaveKey("selector"))
 	})
 }
+
+func TestToUnstructuredSlice(t *testing.T) {
+	g := NewWithT(t)
+	configMap := map[string]any{
+		"apiVersion": "v1",
+		"kind":       "ConfigMap",
+		"metadata": map[string]any{
+			"name": "config",
+		},
+	}
+	secret := map[string]any{
+		"apiVersion": "v1",
+		"kind":       "Secret",
+		"metadata": map[string]any{
+			"name": "secret",
+		},
+	}
+	objects := []*map[string]any{&configMap, &secret}
+
+	result, err := k8s.ToUnstructuredSlice(objects)
+
+	g.Expect(err).NotTo(HaveOccurred())
+	g.Expect(result).To(HaveLen(2))
+	g.Expect(result[0].GetKind()).To(Equal("ConfigMap"))
+	g.Expect(result[0].GetName()).To(Equal("config"))
+	g.Expect(result[1].GetKind()).To(Equal("Secret"))
+	g.Expect(result[1].GetName()).To(Equal("secret"))
+}
