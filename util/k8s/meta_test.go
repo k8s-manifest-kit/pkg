@@ -68,6 +68,23 @@ func TestSetAnnotation(t *testing.T) {
 	})
 }
 
+func TestDescribeObject(t *testing.T) {
+	g := NewWithT(t)
+
+	obj := &unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "apps/v1",
+			"kind":       "Deployment",
+			"metadata": map[string]any{
+				"name":      "webhook",
+				"namespace": "webhook-system",
+			},
+		},
+	}
+
+	g.Expect(k8s.DescribeObject(obj)).To(Equal("apps/v1, Kind=Deployment webhook-system/webhook"))
+}
+
 func TestSetAnnotations(t *testing.T) {
 	t.Run("merges multiple annotations", func(t *testing.T) {
 		g := NewWithT(t)

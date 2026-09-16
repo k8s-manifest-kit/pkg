@@ -1,6 +1,21 @@
 package k8s
 
-import "maps"
+import (
+	"fmt"
+	"maps"
+)
+
+// DescribeObject returns a diagnostic identity containing the object's GVK and
+// namespace/name. It is intended for error messages where kind/name alone may
+// be ambiguous across API groups.
+func DescribeObject(obj Object) string {
+	name := obj.GetName()
+	if namespace := obj.GetNamespace(); namespace != "" {
+		name = namespace + "/" + name
+	}
+
+	return fmt.Sprintf("%s %s", obj.GetObjectKind().GroupVersionKind(), name)
+}
 
 // SetAnnotation sets a single annotation key-value pair on an Object.
 func SetAnnotation(obj Object, key string, value string) {

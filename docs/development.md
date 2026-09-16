@@ -26,4 +26,9 @@ tests should verify both configured and no-op behavior.
 Benchmarks belong beside the implementation they measure and should avoid
 sharing mutable objects between iterations.
 
+## Go style
+
+Declare each parameter type explicitly. Do not group parameters that share a
+type: write `apiVersion string, kind string`, not `apiVersion, kind string`.
+
 See [`design.md`](design.md) and [`../AGENTS.md`](../AGENTS.md).

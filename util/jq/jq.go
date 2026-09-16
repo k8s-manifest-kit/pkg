@@ -57,7 +57,7 @@ func (opts Options) ApplyTo(target *Engine) {
 }
 
 // WithFunction adds a custom function to the JQ engine.
-func WithFunction(name string, minarity, maxarity int, impl func(any, []any) any) Option {
+func WithFunction(name string, minarity int, maxarity int, impl func(any, []any) any) Option {
 	return util.FunctionalOption[Engine](func(e *Engine) {
 		e.functions = append(e.functions, function{
 			name:     name,
