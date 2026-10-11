@@ -1,12 +1,12 @@
 module github.com/k8s-manifest-kit/pkg
 
-go 1.26.8
+go 1.26.9
 
 require (
 	github.com/itchyny/gojq v0.12.19
 	github.com/onsi/gomega v1.44.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/apimachinery v0.37.0
+	k8s.io/apimachinery v0.37.1
 	k8s.io/utils v0.0.0-20260707023825-cf1189d6abe3
 )
 
