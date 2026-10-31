@@ -72,4 +72,27 @@ test-only helpers in `_support_test.go` (see
 than extracting every small helper. Import grouping and formatting follow
 `.golangci.yml`; run `make fmt` rather than hand-formatting.
 
+### Multiline strings
+
+Declare every multiline string — fixtures, manifests, templates, and expected
+output — as a single descriptive, standalone, package-level `const name =`
+declaration with a raw string literal.
+
+Never embed multiline string literals in function or method bodies, and never
+declare them as function-local constants. Never group multiline constants in
+a `const (...)` block; related single-line scalar constants may still be
+grouped, and single-line inline strings are unaffected.
+
+Keep large literal content separate from execution logic for readability.
+Preserve meaningful content indentation; the declaration layout must not
+introduce unintended bytes. A function may format the named template into a
+local variable — the rule concerns where the literal is declared, not where
+its string value is used.
+
+```go
+const fixtureYAML = `apiVersion: v1
+kind: ConfigMap
+`
+```
+
 See [`design.md`](design.md) and [`../AGENTS.md`](../AGENTS.md).
