@@ -58,8 +58,34 @@ supplies to a shared cache — including key functions passed with
 `WithKeyFunc` — runs under overlapping calls and must be safe for concurrent
 use.
 
-Benchmarks belong beside the implementation they measure and should avoid
-sharing mutable objects between iterations.
+### Test layout
+
+Colocate tests with the implementation they exercise. A `test/` subdirectory
+is a separate Go package, not a cosmetic folder; use existing package
+boundaries instead.
+
+Organize larger suites by concern using `<component>_<concern>_test.go`
+(`util/cache/cache_key_test.go`, `util/cache/cache_render_test.go`,
+`util/cache/cache_concurrency_test.go`) while keeping a cohesive
+`<component>_test.go` for core API behavior (`util/cache/cache_test.go`).
+Not every package needs every concern-suffixed file; add them only where a
+suite has actually grown.
+
+Place benchmarks in `<component>_benchmark_test.go`
+(`util/maps/merge_benchmark_test.go`), in the same package directory as the
+implementation they measure — colocation means the same package directory,
+not the same source file — retaining benchmark names and setup/timing
+behavior, and avoiding shared mutable objects between iterations.
+
+Put shared helpers in `<component>_support_test.go` and substantial
+feature-specific fixture machinery in `<component>_<concern>_support_test.go`.
+Small test-local helpers and scenario assertions can remain beside their
+tests. Support files contain helper, fixture, and type declarations, not
+test, benchmark, fuzz, or example entry points; `_support_test.go` is a
+naming convention, and only `_test.go` has Go's test-file significance.
+
+Keep tests discoverable without excessive fragmentation: no hard line limit,
+no mandatory one-file-per-test rule, and no shared cross-repository harness.
 
 ## Code organization and Go style
 
@@ -67,10 +93,11 @@ Declare each parameter type explicitly. Do not group parameters that share a
 type: write `apiVersion string, kind string`, not `apiVersion, kind string`.
 
 Put helpers shared across a package's implementation in `_support.go` and
-test-only helpers in `_support_test.go` (see
-`util/cache/cache_support_test.go`); keep cohesive feature files intact rather
-than extracting every small helper. Import grouping and formatting follow
-`.golangci.yml`; run `make fmt` rather than hand-formatting.
+helpers shared across a package's tests in `_support_test.go` (see
+`util/cache/cache_support_test.go`); small test-local helpers and scenario
+assertions can remain beside their tests, so keep cohesive feature files
+intact rather than extracting every small helper. Import grouping and
+formatting follow `.golangci.yml`; run `make fmt` rather than hand-formatting.
 
 ### Multiline strings
 
