@@ -10,8 +10,8 @@
 
 ## Packages and API
 
-- `util/cache`: generic TTL cache via `cache.New[T]`, plus `NewRenderCache` for deep-cloned Kubernetes objects. Keys are arbitrary values converted by `WithKeyFunc`; the default TTL is five minutes.
-- `util/maps`: `DeepMerge`, `DeepCloneMap`, and `DeepCloneValue`. Maps merge recursively; slices and non-map values from the overlay replace the base.
+- `util/cache`: generic TTL cache via `cache.New[T]`, plus `NewRenderCache` for deep-cloned Kubernetes objects. The generic cache stores values as given and performs no copying; `Set` inputs stay caller-owned. Keys are arbitrary values converted by `WithKeyFunc`; the default TTL is five minutes.
+- `util/maps`: `DeepMerge`, `DeepCloneMap`, and `DeepCloneValue`. Maps merge recursively; slices and non-map values from the overlay replace the base. Cloning covers JSON-like trees; pointers, structs, and other retained values are not deeply isolated.
 - `util/k8s`: YAML decoding, unstructured conversion, metadata helpers, and content hashing.
 - `util/jq`: JQ engine with custom variables and functions.
 - `util/metrics`: context-carried engine and renderer metrics, with memory and no-op implementations.
@@ -26,6 +26,8 @@ Run commands from this directory:
 
 ```bash
 make test
+make test/race
+make bench
 make fmt
 make lint
 make lint/fix
