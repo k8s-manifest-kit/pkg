@@ -89,6 +89,13 @@ no mandatory one-file-per-test rule, and no shared cross-repository harness.
 
 ## Code organization and Go style
 
+The package layout follows the shared
+[`project-layout.md`](../../docs/project-layout.md) convention (workspace
+navigation): each utility is a focused `util/<responsibility>` package —
+`util/cache`, `util/errors`, `util/jq`, `util/k8s`, `util/maps`,
+`util/metrics`, `util/option`, and `util/slice` — with no mixed root `util`
+Go package.
+
 Declare each parameter type explicitly. Do not group parameters that share a
 type: write `apiVersion string, kind string`, not `apiVersion, kind string`.
 

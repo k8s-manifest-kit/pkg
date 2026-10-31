@@ -11,7 +11,7 @@ Notable packages include:
 - `maps` for recursive map merging.
 - `jq` for JQ-based object transformations.
 - `metrics` for optional render metrics.
-- `errors` and `option.go` for shared error and option utilities.
+- `errors`, `option`, and `slice` for shared error, functional-option, and slice utilities.
 
 See [`docs/design.md`](docs/design.md), [`docs/development.md`](docs/development.md),
 and [`AGENTS.md`](AGENTS.md).

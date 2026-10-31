@@ -48,9 +48,10 @@ render and renderer observations and supports no-op operation when metrics are
 not configured. Shared error helpers preserve causes while adding operation
 context.
 
-Functional option helpers live in [`util/option.go`](../util/option.go)
-(`Option[T]` and `FunctionalOption[T]`) in the `util` package; there is no
-separate `util/option` directory.
+Functional option helpers live in [`util/option`](../util/option)
+(`Option[T]` and `FunctionalOption[T]`), and slice conversion helpers such as
+`ToAnySlice` live in [`util/slice`](../util/slice). There is no mixed root
+`util` Go package.
 
 ## Related documentation
 

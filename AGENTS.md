@@ -16,9 +16,10 @@
 - `util/jq`: JQ engine with custom variables and functions.
 - `util/metrics`: context-carried engine and renderer metrics, with memory and no-op implementations.
 - `util/errors`: shared error helpers.
-- `util/option.go`: generic `Option[T]` and `FunctionalOption[T]` definitions.
+- `util/option`: generic `Option[T]` and `FunctionalOption[T]` definitions.
+- `util/slice`: slice conversion helpers such as `ToAnySlice`.
 
-Use the module imports under `github.com/k8s-manifest-kit/pkg/util/...`. Do not reference the removed `util/option` directory.
+Use the module imports under `github.com/k8s-manifest-kit/pkg/util/...`.
 
 ## Development
 

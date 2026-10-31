@@ -1,4 +1,4 @@
-package util
+package slice
 
 // ToAnySlice converts a typed slice to a slice of any values.
 func ToAnySlice[T any](values []T) []any {

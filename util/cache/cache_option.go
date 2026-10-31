@@ -3,11 +3,11 @@ package cache
 import (
 	"time"
 
-	"github.com/k8s-manifest-kit/pkg/util"
+	"github.com/k8s-manifest-kit/pkg/util/option"
 )
 
 // Option is a generic option for Cache.
-type Option = util.Option[Options]
+type Option = option.Option[Options]
 
 // Options is a struct-based option that can set cache options.
 type Options struct {
@@ -31,7 +31,7 @@ func (opts Options) ApplyTo(target *Options) {
 
 // WithTTL sets the time-to-live for cache entries.
 func WithTTL(ttl time.Duration) Option {
-	return util.FunctionalOption[Options](func(opts *Options) {
+	return option.FunctionalOption[Options](func(opts *Options) {
 		opts.TTL = ttl
 	})
 }
@@ -48,7 +48,7 @@ func WithTTL(ttl time.Duration) Option {
 //	    return dump.ForHash(key)
 //	})
 func WithKeyFunc(fn func(any) string) Option {
-	return util.FunctionalOption[Options](func(opts *Options) {
+	return option.FunctionalOption[Options](func(opts *Options) {
 		opts.KeyFunc = fn
 	})
 }

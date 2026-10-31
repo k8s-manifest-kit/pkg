@@ -1,4 +1,4 @@
-package util
+package option
 
 // Option is a generic interface for functional options.
 type Option[T any] interface {

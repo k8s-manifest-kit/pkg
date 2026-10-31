@@ -6,7 +6,7 @@ import (
 
 	"github.com/itchyny/gojq"
 
-	"github.com/k8s-manifest-kit/pkg/util"
+	"github.com/k8s-manifest-kit/pkg/util/option"
 )
 
 var (
@@ -39,7 +39,7 @@ type Engine struct {
 }
 
 // Option is a generic option for Engine.
-type Option = util.Option[Engine]
+type Option = option.Option[Engine]
 
 // Options is a struct-based option that can set multiple engine options at once.
 type Options struct {
@@ -58,7 +58,7 @@ func (opts Options) ApplyTo(target *Engine) {
 
 // WithFunction adds a custom function to the JQ engine.
 func WithFunction(name string, minarity int, maxarity int, impl func(any, []any) any) Option {
-	return util.FunctionalOption[Engine](func(e *Engine) {
+	return option.FunctionalOption[Engine](func(e *Engine) {
 		e.functions = append(e.functions, function{
 			name:     name,
 			minarity: minarity,
@@ -70,7 +70,7 @@ func WithFunction(name string, minarity int, maxarity int, impl func(any, []any)
 
 // WithVariable adds a variable to the JQ engine.
 func WithVariable(name string, value any) Option {
-	return util.FunctionalOption[Engine](func(e *Engine) {
+	return option.FunctionalOption[Engine](func(e *Engine) {
 		if len(name) == 0 {
 			return
 		}
