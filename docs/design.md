@@ -53,6 +53,35 @@ Functional option helpers live in [`util/option`](../util/option)
 `ToAnySlice` live in [`util/slice`](../util/slice). There is no mixed root
 `util` Go package.
 
+## HTTP clients
+
+The factories live in [`util/httpclient`](../util/httpclient):
+`httpclient.NewClient` and `httpclient.NewTransport` construct private HTTP
+clients and transports. Every call returns a fresh instance with a fresh
+`net.Dialer`; nothing is read from, cloned from, or shared with
+`http.DefaultClient`, `http.DefaultTransport`, or any other package-level
+mutable HTTP state. This is an explicit difference from Go's pooled globals:
+instances are independent, so mutating one — or closing its idle
+connections — cannot affect any other instance.
+
+The transports are deliberately non-pooled: keep-alives are disabled
+(`DisableKeepAlives: true`, `MaxIdleConnsPerHost: -1`), so every request
+uses its own connection and no connection lingers idle after a response.
+The remaining baseline fields follow the standard library defaults: the
+proxy is resolved from the process environment, connection establishment is
+bounded at 30 seconds with a 30 second TCP keep-alive interval, HTTP/2 is
+attempted when the connection supports it, the idle connection bounds are
+100 connections with a 90 second idle timeout, the TLS handshake is bounded
+at 10 seconds, and the expect-continue timeout is 1 second. TLS
+verification keeps its zero value: system roots, no custom shared TLS
+configuration.
+
+The client timeout stays zero deliberately. Callers that need a deadline
+own the request context. The client also has no cookie jar and no custom
+redirect policy. Callers own the lifecycle of everything they construct:
+always close response bodies, and close idle connections on instances they
+created when finished with them.
+
 ## Related documentation
 
 - [`../AGENTS.md`](../AGENTS.md)

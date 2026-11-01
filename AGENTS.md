@@ -18,6 +18,14 @@
 - `util/errors`: shared error helpers.
 - `util/option`: generic `Option[T]` and `FunctionalOption[T]` definitions.
 - `util/slice`: slice conversion helpers such as `ToAnySlice`.
+- `util/httpclient`: private, non-pooled HTTP factories. `NewClient` and
+  `NewTransport` return fresh instances that share nothing with
+  `http.DefaultClient`, `http.DefaultTransport`, or any other package-level
+  mutable HTTP state. Keep-alives are disabled and no idle connection is
+  retained per host, so every request uses its own connection. The proxy is
+  resolved from the environment, TLS verification keeps its zero value, the
+  client timeout stays zero, and callers own each instance's lifecycle
+  (close response bodies and, when finished, idle connections they own).
 
 Use the module imports under `github.com/k8s-manifest-kit/pkg/util/...`.
 

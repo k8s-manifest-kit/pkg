@@ -58,6 +58,17 @@ supplies to a shared cache — including key functions passed with
 `WithKeyFunc` — runs under overlapping calls and must be safe for concurrent
 use.
 
+HTTP tests use local servers created by the test with explicit handlers, and
+never the default mux or any package-level server. When non-pooling or
+protocol behavior is under test, observe it rather than inspect fields:
+count accepted connections on a test-owned listener, record what the server
+saw under a mutex, and collect `httptrace` observations from transport
+goroutines, asserting only after the requests finish. TLS-based tests
+generate their own certificate and trust only their own root pool; they
+never disable verification or borrow a global TLS configuration. Never
+mutate or replace `http.DefaultClient`, `http.DefaultTransport`, or
+`http.DefaultServeMux`, even in tests.
+
 ### Test layout
 
 Colocate tests with the implementation they exercise. A `test/` subdirectory
@@ -92,9 +103,9 @@ no mandatory one-file-per-test rule, and no shared cross-repository harness.
 The package layout follows the shared
 [`project-layout.md`](../../docs/project-layout.md) convention (workspace
 navigation): each utility is a focused `util/<responsibility>` package —
-`util/cache`, `util/errors`, `util/jq`, `util/k8s`, `util/maps`,
-`util/metrics`, `util/option`, and `util/slice` — with no mixed root `util`
-Go package.
+`util/cache`, `util/errors`, `util/httpclient`, `util/jq`, `util/k8s`,
+`util/maps`, `util/metrics`, `util/option`, and `util/slice` — with no
+mixed root `util` Go package.
 
 Declare each parameter type explicitly. Do not group parameters that share a
 type: write `apiVersion string, kind string`, not `apiVersion, kind string`.
