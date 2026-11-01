@@ -3,7 +3,7 @@ package k8s_test
 import (
 	"testing"
 
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	jqmatcher "github.com/lburgazzoli/gomega-matchers/pkg/matchers/jq"
 
 	"github.com/k8s-manifest-kit/pkg/util/k8s"
 
@@ -264,10 +264,7 @@ func TestDecodeYAML(t *testing.T) {
 		g.Expect(result).Should(HaveLen(1))
 		g.Expect(result[0].GetKind()).Should(Equal("Deployment"))
 
-		spec, found, err := unstructured.NestedMap(result[0].Object, "spec")
-		g.Expect(err).ShouldNot(HaveOccurred())
-		g.Expect(found).Should(BeTrue())
-		g.Expect(spec).Should(HaveKey("replicas"))
+		g.Expect(result[0].Object).Should(WithTransform(jqmatcher.Extract(".spec"), HaveKey("replicas")))
 	})
 }
 
@@ -353,11 +350,8 @@ func TestToUnstructured(t *testing.T) {
 
 		g.Expect(err).ShouldNot(HaveOccurred())
 
-		spec, found, err := unstructured.NestedMap(result.Object, "spec")
-		g.Expect(err).ShouldNot(HaveOccurred())
-		g.Expect(found).Should(BeTrue())
-		g.Expect(spec).Should(HaveKey("ports"))
-		g.Expect(spec).Should(HaveKey("selector"))
+		g.Expect(result.Object).Should(WithTransform(jqmatcher.Extract(".spec"), HaveKey("ports")))
+		g.Expect(result.Object).Should(WithTransform(jqmatcher.Extract(".spec"), HaveKey("selector")))
 	})
 }
 
