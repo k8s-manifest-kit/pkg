@@ -49,6 +49,13 @@ before copying them.
 `k8s` contains helpers for Kubernetes objects and metadata, and `jq`
 provides JQ-backed transformations.
 
+`k8s.DecodeYAML` decodes multi-document YAML permissively: empty documents
+and documents without nonempty string `kind` and `apiVersion` are skipped,
+while syntax, decode, and conversion failures fail with the zero-based
+index of the offending document. This is document metadata checking, not
+Kubernetes schema validation; Helm strict mode concerns template evaluation
+and is unrelated to this permissive contract.
+
 ## Metrics and errors
 
 Metrics are optional and can be carried through a context with

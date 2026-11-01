@@ -13,6 +13,20 @@ import (
 )
 
 // DecodeYAML decodes YAML content into a slice of unstructured objects.
+//
+// Decoding is permissive so that mixed or template-generated output may
+// contain non-resource documents:
+//   - Empty documents are skipped.
+//   - Documents without a nonempty string kind or apiVersion are skipped.
+//   - Conversion failures other than a missing kind fail with an error
+//     naming the zero-based index of the offending document.
+//   - YAML syntax and decode failures fail the same way.
+//
+// This is document metadata checking, not Kubernetes schema validation: a
+// skipped document may be an intended resource with misspelled metadata,
+// and a returned object is not validated against any schema. Helm strict
+// mode concerns template evaluation and is unrelated to this permissive
+// contract.
 func DecodeYAML(content []byte) ([]unstructured.Unstructured, error) {
 	results := make([]unstructured.Unstructured, 0)
 
