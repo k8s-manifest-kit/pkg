@@ -48,9 +48,14 @@ func NewClient() *http.Client {
 // attempted when the connection supports it, and callers own the returned
 // instance and its lifecycle.
 func NewTransport() *http.Transport {
+	d := &net.Dialer{
+		Timeout:   dialTimeout,
+		KeepAlive: dialKeepAlive,
+	}
+
 	return &http.Transport{
 		Proxy:                 http.ProxyFromEnvironment,
-		DialContext:           (&net.Dialer{Timeout: dialTimeout, KeepAlive: dialKeepAlive}).DialContext,
+		DialContext:           d.DialContext,
 		ForceAttemptHTTP2:     true,
 		MaxIdleConns:          maxIdleConns,
 		MaxIdleConnsPerHost:   noIdleConnsPerHost,
