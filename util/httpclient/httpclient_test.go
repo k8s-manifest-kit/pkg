@@ -4,6 +4,9 @@ import (
 	"crypto/tls"
 	"net/http"
 	"net/url"
+	"os"
+	"os/exec"
+	"strings"
 	"testing"
 	"time"
 
@@ -114,18 +117,26 @@ func TestMutatingOneInstanceLeavesOtherInstancesUnchanged(t *testing.T) {
 	g.Expect(http.DefaultClient.Timeout).To(Equal(time.Duration(0)))
 }
 
-// TestTransportResolvesProxyFromEnvironment must be the first test to invoke
-// the environment proxy function: the standard library reads the proxy
-// environment once per process. Later tests only contact loopback
-// addresses, which are never proxied, so the cached configuration cannot
-// affect them.
+const proxyTestSubprocessEnv = "PKG_UTIL_HTTPCLIENT_PROXY_TEST_CHILD"
+
 func TestTransportResolvesProxyFromEnvironment(t *testing.T) {
 	g := NewWithT(t)
+	if os.Getenv(proxyTestSubprocessEnv) != "1" {
+		executable, err := os.Executable()
+		g.Expect(err).NotTo(HaveOccurred())
 
-	t.Setenv("HTTP_PROXY", "http://proxy.example.test:3128")
-	t.Setenv("http_proxy", "http://proxy.example.test:3128")
-	t.Setenv("NO_PROXY", "")
-	t.Setenv("no_proxy", "")
+		//nolint:gosec // Re-exec this test binary with a fixed test selector.
+		command := exec.CommandContext(
+			t.Context(),
+			executable,
+			"-test.run=^TestTransportResolvesProxyFromEnvironment$",
+		)
+		command.Env = proxyTestEnvironment()
+		output, err := command.CombinedOutput()
+		g.Expect(err).NotTo(HaveOccurred(), "proxy subprocess output:\n%s", output)
+
+		return
+	}
 
 	transport := httpclient.NewTransport()
 	g.Expect(transport.Proxy).NotTo(BeNil())
@@ -137,4 +148,25 @@ func TestTransportResolvesProxyFromEnvironment(t *testing.T) {
 	g.Expect(err).NotTo(HaveOccurred())
 	g.Expect(proxyURL).NotTo(BeNil())
 	g.Expect(proxyURL.String()).To(Equal("http://proxy.example.test:3128"))
+}
+
+func proxyTestEnvironment() []string {
+	env := make([]string, 0, len(os.Environ())+5)
+	for _, entry := range os.Environ() {
+		name, _, _ := strings.Cut(entry, "=")
+		switch name {
+		case "HTTP_PROXY", "http_proxy", "NO_PROXY", "no_proxy", "REQUEST_METHOD":
+			continue
+		default:
+			env = append(env, entry)
+		}
+	}
+
+	return append(env,
+		proxyTestSubprocessEnv+"=1",
+		"HTTP_PROXY=http://proxy.example.test:3128",
+		"http_proxy=http://proxy.example.test:3128",
+		"NO_PROXY=",
+		"no_proxy=",
+	)
 }
