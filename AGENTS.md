@@ -45,5 +45,11 @@ make check
 
 Tests use vanilla Gomega and `t.Context()`. Keep reusable YAML/JSON test data at package scope, preserve error wrapping with `%w`, and add benchmarks for hot paths such as cache, clone, and merge operations.
 
+Keep tests proportional to the contract under test: use the simplest test
+that proves it, and add helpers, mocks, instrumentation, or extra test
+files only when a concrete behavior or regression requires them. The
+[test simplicity](docs/development.md#test-simplicity) guidance in the
+development guide has the details, with `util/httpclient` as the example.
+
 Declare parameter types explicitly rather than grouping same-typed parameters;
 write `apiVersion string, kind string`, not `apiVersion, kind string`.

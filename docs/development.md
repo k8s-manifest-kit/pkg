@@ -58,12 +58,35 @@ supplies to a shared cache — including key functions passed with
 `WithKeyFunc` — runs under overlapping calls and must be safe for concurrent
 use.
 
-HTTP factory tests stay minimal and assert the construction contract
-directly: fresh instances that are not the standard library globals and
-carry the non-pooling transport settings. Observed non-reuse behavior is
-covered by the consuming renderer's regression tests, not re-proved here.
 Never mutate or replace `http.DefaultClient`, `http.DefaultTransport`, or
 `http.DefaultServeMux`, even in tests.
+
+### Test simplicity
+
+Use the simplest test that proves the contract under test. Don't re-test
+standard-library internals, and don't add helpers, mocks, instrumentation,
+subprocesses, or extra test files unless a concrete behavior or regression
+requires them. Preserve the necessary correctness, ownership, and concurrency
+coverage described above.
+
+Keep test complexity proportional to the code and its risk: start with a
+small fixture and focused assertions, reuse existing fixtures or standard
+test utilities before building a bespoke harness, and don't invent
+speculative edge-case matrices. Field checks are appropriate for a
+construction contract, but they are not a substitute for observable output,
+effective mutation, error, integrity, or race regressions where those are
+the contract.
+
+`util/httpclient` is the reference example. Its factories' contract is fresh
+instances that are not the standard-library globals and carry the non-pooling
+transport settings, so
+[`util/httpclient/httpclient_test.go`](../util/httpclient/httpclient_test.go)
+proves exactly that with two tests, `TestNewClientReturnsIndependentClients`
+and `TestNewTransportReturnsNonPooledTransports`. Counting listeners,
+recording handlers, custom TLS CAs, protocol fixtures, and subprocess proxies
+add nothing to those assertions and don't belong in this suite; it does not,
+and need not, observe protocol or proxy behavior. Consumers that rely on
+observed non-reuse keep their own focused regression tests for it.
 
 ### Test layout
 
