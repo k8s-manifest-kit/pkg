@@ -58,15 +58,11 @@ supplies to a shared cache — including key functions passed with
 `WithKeyFunc` — runs under overlapping calls and must be safe for concurrent
 use.
 
-HTTP tests use local servers created by the test with explicit handlers, and
-never the default mux or any package-level server. When non-pooling or
-protocol behavior is under test, observe it rather than inspect fields:
-count accepted connections on a test-owned listener, record what the server
-saw under a mutex, and collect `httptrace` observations from transport
-goroutines, asserting only after the requests finish. TLS-based tests
-generate their own certificate and trust only their own root pool; they
-never disable verification or borrow a global TLS configuration. Never
-mutate or replace `http.DefaultClient`, `http.DefaultTransport`, or
+HTTP factory tests stay minimal and assert the construction contract
+directly: fresh instances that are not the standard library globals and
+carry the non-pooling transport settings. Observed non-reuse behavior is
+covered by the consuming renderer's regression tests, not re-proved here.
+Never mutate or replace `http.DefaultClient`, `http.DefaultTransport`, or
 `http.DefaultServeMux`, even in tests.
 
 ### Test layout
