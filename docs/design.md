@@ -37,6 +37,15 @@ pointer or struct fields survives the clone. There is no cycle detection;
 the helpers bound what they clone to the types above rather than isolating
 arbitrary object graphs.
 
+`maps.ValidateAcyclic` reports reference cycles among exactly the
+`map[string]any` and `[]any` nodes those helpers traverse; every other type
+is a leaf, so shared references that do not form a cycle pass, and retained
+values of other types are outside its guarantee. Only nodes on one descent
+path are compared, so a slice holding an acyclic prefix of itself remains
+valid. The clone and merge helpers themselves still recurse without built-in
+cycle validation, so callers who accept trees that may be cyclic validate
+before copying them.
+
 `k8s` contains helpers for Kubernetes objects and metadata, and `jq`
 provides JQ-backed transformations.
 
