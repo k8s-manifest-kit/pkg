@@ -21,9 +21,12 @@ type (
 )
 
 type (
-	aliasMap   = map[string]any
-	rootValues = map[string]any
+	aliasMap = map[string]any
 )
+
+// rootValues is a defined map type: passing it through the map[string]any
+// parameter keeps the ordinary dynamic type, so the root is traversed.
+type rootValues map[string]any
 
 func TestValidateAcyclic(t *testing.T) {
 	t.Run("should pass nil, empty, and ordinary nested values", func(t *testing.T) {
