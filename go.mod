@@ -7,7 +7,7 @@ require (
 	github.com/lburgazzoli/gomega-matchers v0.6.1-0.20261030191553-1e92fbfadfd1
 	github.com/onsi/gomega v1.44.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/apimachinery v0.37.1
+	k8s.io/apimachinery v0.37.2
 	k8s.io/utils v0.0.0-20261023123148-ca04ba58ecab
 )
 
